@@ -1,5 +1,6 @@
 package com.jparedes.checkoutautomation.utils
 
+import androidx.test.uiautomator.By
 import androidx.test.uiautomator.BySelector
 import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.UiObject2
@@ -67,5 +68,15 @@ object WaitUtils {
         if (!disappeared) {
             throw AssertionError("Element matching $selector did NOT disappear within $timeout ms.")
         }
+    }
+
+    fun getTextStartsWithScrolling(device: UiDevice,prefix: String): String {
+        val sel = By.textStartsWith(prefix)
+
+        // If already visible, return quickly
+        waitForObjectWithScroll(device,sel)
+
+        val obj = device.findObject(sel) ?: throw AssertionError("Could not find label starting with: '$prefix'")
+        return obj.text
     }
 }

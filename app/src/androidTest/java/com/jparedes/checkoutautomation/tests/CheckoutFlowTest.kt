@@ -39,8 +39,12 @@ class CheckoutFlowTest : BaseTest() {
         // Checkout flow
         pages.cartPage.clickCheckoutBtn()
         pages.checkoutInfoPage.isDisplayed()
-        pages.checkoutInfoPage.checkoutHappyPath("Julio", "Paredes", "85302")
+        pages.checkoutInfoPage.insertCorrectCheckoutInfo("Julio", "Paredes", "85302")
         pages.checkoutOverViewPage.isDisplayed()
+        pages.checkoutOverViewPage.verifyProductOverView(Onesie.name,"$${Onesie.price}")
+        pages.checkoutOverViewPage.verifyPaymentInfo(standardUser.cardString)
+        pages.checkoutOverViewPage.verifyShippingInfo(standardUser.shippingAddress)
+        pages.checkoutOverViewPage.verifyTotals()
         pages.checkoutOverViewPage.clickFinish()
         pages.checkoutCompletePage.isDisplayed()
         pages.checkoutCompletePage.verifyOrderCompleteMessage()

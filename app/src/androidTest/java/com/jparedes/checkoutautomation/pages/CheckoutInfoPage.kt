@@ -34,7 +34,7 @@ class CheckoutInfoPage (device: UiDevice, context: Context) : BasePage(device) {
         click(continueBtn)
     }
 
-    fun checkoutHappyPath(firstName: String, lastName: String, postalCode: String) {
+    fun insertCorrectCheckoutInfo(firstName: String, lastName: String, postalCode: String) {
         enterFirstName(firstName)
         enterLastName(lastName)
         enterPostalCode(postalCode)

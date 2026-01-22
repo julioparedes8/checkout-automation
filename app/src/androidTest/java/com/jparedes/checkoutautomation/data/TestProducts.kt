@@ -7,6 +7,6 @@ object TestProducts {
     )
     val Onesie = Product(
         name = "Sauce Labs Onesie",
-        price = 29.99
+        price = 7.99
     )
 }

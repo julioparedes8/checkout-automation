@@ -50,7 +50,7 @@ Architecture at a glance
 - Base layer (base/): Common setup, device initialization, and shared page helpers.
 - Page Objects layer (pages/): Encapsulates screen-specific behaviors (e.g., selectProduct(name), removeItemByName(name)) and hides locators and UI mechanics from tests.
 - Utilities layer (utils/): Shared, reusable low-level interactions such as explicit waits, scrolling, and element lookup patterns.
-- - Managers layer (managers/): Shared managers classes.
+- Managers layer (managers/): Shared managers classes.
 - Test data layer (data/): Centralized constants/models for products and users (single source of truth; avoids “magic strings” in tests).
 
 
@@ -120,15 +120,17 @@ This keeps it **out of production (`main`) code** and close to instrumentation t
 2. Open in Android Studio.
 3. Ensure an emulator/device is available and visible via ADB.
 
-## Running Tests
+## Build & run UI tests (Gradle)
+Assumes an emulator/device is running and visible to adb devices.
+
+## Clean and build test apk
+./gradlew :app:clean :app:assembleDebugAndroidTest
 
 ## Run all instrumentation tests
-./gradlew connectedAndroidTest
+./gradlew :app:connectedDebugAndroidTest
 
 ## Run a single test class
-./gradlew connectedAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=com.jparedes.checkoutautomation.tests.CheckoutFlowTest
-
+./gradlew :app:connectedDebugAndroidTest "-Pandroid.testInstrumentationRunnerArguments.class=com.jparedes.checkoutautomation.tests.CheckoutFlowTest"
 ## Run a single test method
-./gradlew connectedAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=com.jparedes.checkoutautomation.tests.CheckoutFlowTest#testCompleteCheckoutFlow
-
+./gradlew :app:connectedDebugAndroidTest "-Pandroid.testInstrumentationRunnerArguments.class=com.jparedes.checkoutautomation.tests.CheckoutFlowTest#testCompleteCheckoutFlow"
 
