@@ -11,7 +11,6 @@ The framework follows **Page Object Model (POM)** and includes utilities for **w
 - Android Instrumentation Tests (`androidTest`)
 - UI Automator 2 (`UiDevice`, `BySelector`, `UiObject2`, `UiScrollable`)
 - JUnit4
-
 ---
 
 ## Prerequisites
@@ -43,51 +42,47 @@ Assumptions
 
 ## Project Structure (Recommended)
 Design Overview (Framework Architecture)
+
 This project is a Kotlin + UI Automator 2 instrumentation test framework designed around Page Object Model (POM) to keep tests readable, reusable, and stable as the app UI evolves.
 Architecture at a glance
 
-Tests layer (tests/): Defines business scenarios (e.g., add to cart, remove item, checkout). Tests should read like user workflows and avoid UI details.
-Page Objects layer (pages/): Encapsulates screen-specific behaviors (e.g., selectProduct(name), removeItemByName(name)) and hides locators and UI mechanics from tests.
-Utilities layer (utils/): Shared, reusable low-level interactions such as explicit waits, scrolling, and element lookup patterns.
-Test data layer (data/): Centralized constants/models for products and users (single source of truth; avoids “magic strings” in tests).
-Base layer (base/): Common setup, device initialization, and shared page helpers.
+- Tests layer(tests/): Defines business scenarios (e.g., add to cart, remove item, checkout). Tests should read like user workflows and avoid UI details.
+- Base layer (base/): Common setup, device initialization, and shared page helpers.
+- Page Objects layer (pages/): Encapsulates screen-specific behaviors (e.g., selectProduct(name), removeItemByName(name)) and hides locators and UI mechanics from tests.
+- Utilities layer (utils/): Shared, reusable low-level interactions such as explicit waits, scrolling, and element lookup patterns.
+- - Managers layer (managers/): Shared managers classes.
+- Test data layer (data/): Centralized constants/models for products and users (single source of truth; avoids “magic strings” in tests).
 
-Key components and responsibilities
 
+**Base Layer**
 
-BaseTest
-
-Bootstraps UiDevice and test context.
+- **BaseTest** Bootstraps UiDevice and test context.
 Handles app lifecycle per test (launch/cleanup) to keep tests independent.
 Owns the entry point to page objects (directly or via a manager/factory).
-
-
-BasePage
-
-Provides shared page-level helpers (e.g., isDisplayed, “find or wait”, safe click patterns).
+- **BasePage** Provides shared page-level helpers (e.g., isDisplayed, “find or wait”, safe click patterns).
 Ensures consistent behavior across all page objects.
 
 
-Page Objects (e.g., HomeProductsPage, CartPage)
+**Page Objects (e.g., HomeProductsPage, CartPage)**
 
 Represent a single screen and expose user actions + assertions.
 Keep selectors private and localized to the page class.
 Example behaviors shown in your screenshots:
 
 
-WaitUtils
+**Utils**
 
 Central place for explicit waits using Until.hasObject(...).
 Includes scroll-until-found behavior: scroll in controlled attempts and stop immediately once the element is detected (reduces wasted scrolling and flakiness).
 
 
-PageObjectManager ()
+**PageObjectManager**
 
 Provides a single, consistent way to create page objects with shared dependencies (device/context).
 Helps avoid repeated instantiation logic in tests.
 
 
-Locator strategy (how elements are identified)
+**Locator strategy (how elements are identified)**
 
 The framework primarily uses UI Automator selectors (e.g., by visible text) for readability and quick iteration.
 For long-term stability, the preferred order is:
@@ -97,7 +92,7 @@ content-desc / accessibility label
 text
 
 
-Data-driven testing approach
+**Test Data: Data-driven testing approach**
 
 Product names, users, and reusable inputs live under data/ and are referenced by tests/pages.
 This reduces duplication and makes updates painless (change once; tests stay intact).
@@ -108,6 +103,8 @@ BaseTest launches the app and prepares UiDevice.
 Test calls a page behavior (e.g., select product by test data name).
 Page object uses WaitUtils to wait/scroll until the element is available.
 Test asserts outcomes using page-level methods (e.g., item is present/removed in cart).
+
+---
 
 ### Where should test data live?
 Place test data in:
