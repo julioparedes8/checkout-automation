@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.BySelector
 import androidx.test.uiautomator.UiDevice
-import androidx.test.uiautomator.Until
 import com.jparedes.checkoutautomation.base.BasePage
 import com.jparedes.checkoutautomation.utils.WaitUtils
 
@@ -19,31 +18,29 @@ class CartPage (device: UiDevice, context: Context) : BasePage(device) {
         return isDisplayed(cartTitle)
     }
 
-    fun verifyProductExists(productName: BySelector) {
-        WaitUtils.waitForObject(device, productName)
-        isDisplayed(productName)
+    fun isProductDisplayed(productName: BySelector): Boolean {
+        return WaitUtils.hasObject(device, productName)
     }
 
-    fun removeItemByName(productName: String) {
+    fun removeItemByName(productName: String): Boolean {
         // Find the cart item node by product name
         val cartItems = device.findObjects(cartItemContent)
         for (item in cartItems) {
-            val nameNode = item.findObject(By.text(productName))
+            val productSelector = By.text(productName)
+            val nameNode = item.findObject(productSelector)
             if (nameNode != null) {
                 val removeButton = item.findObject(remove)
                 if (removeButton != null) {
                     removeButton.click()
-                    return
+                    // Wait for the item to disappear from the screen
+                    WaitUtils.waitForObjectToDisappear(device, productSelector)
+                    return true
                 } else {
-                    throw AssertionError("REMOVE button not found in cart item for '$productName'")
+                    return false
                 }
             }
         }
-        throw AssertionError("Product '$productName' not found in any cart item!")
-    }
-
-    fun verifyProductDoesNotExists(productName: BySelector) {
-        isNotDisplayed(productName)
+        return false
     }
 
     fun clickCheckoutBtn() {

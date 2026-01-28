@@ -50,9 +50,16 @@ Architecture at a glance
 - Base layer (base/): Common setup, device initialization, and shared page helpers.
 - Page Objects layer (pages/): Encapsulates screen-specific behaviors (e.g., selectProduct(name), removeItemByName(name)) and hides locators and UI mechanics from tests.
 - Utilities layer (utils/): Shared, reusable low-level interactions such as explicit waits, scrolling, and element lookup patterns.
-- Managers layer (managers/): Shared managers classes.
+- Managers layer (managers/): Shared managers classes, PageObjectManager provides a Single Point of Access (SPA) to page objects.
 - Test data layer (data/): Centralized constants/models for products and users (single source of truth; avoids “magic strings” in tests).
 
+
+**Test Layer**
+The **Tests Layer** contains the high-level test scenarios that describe how a user interacts with the app. Each test class, like `CheckoutFlowTest.kt`, validates a specific feature or user journey from start to finish.
+
+*   **Business-Focused:** Tests are written from a user's perspective, describing *what* to do, not *how* to do it (e.g., `pages.cartPage.removeItemByName(...)`).
+*   **Assertions Live Here:** This layer is the single source of truth for validation. It uses JUnit assertions (`assertTrue`, `assertEquals`) to verify the application's state at each step.
+*   **Readable & Maintainable:** By using page objects, the tests are clean and read like a script, making them easy to understand and maintain.
 
 **Base Layer**
 
@@ -65,7 +72,7 @@ Ensures consistent behavior across all page objects.
 
 **Page Objects (e.g., HomeProductsPage, CartPage)**
 
-Represent a single screen and expose user actions + assertions.
+Represents a single screen and expose user actions (behaviors) that interact with the screen.
 Keep selectors private and localized to the page class.
 Example behaviors shown in your screenshots:
 
@@ -79,7 +86,7 @@ Includes scroll-until-found behavior: scroll in controlled attempts and stop imm
 **PageObjectManager**
 
 Provides a single, consistent way to create page objects with shared dependencies (device/context).
-Helps avoid repeated instantiation logic in tests.
+Helps avoid repeated instantiation logic in tests and reduces boilerplate.
 
 
 **Locator strategy (how elements are identified)**
@@ -100,9 +107,8 @@ This reduces duplication and makes updates painless (change once; tests stay int
 End-to-end flow example (how a test typically runs)
 
 BaseTest launches the app and prepares UiDevice.
-Test calls a page behavior (e.g., select product by test data name).
+Test calls a page behavior (e.g., select product by test data name) and assert outcomes.
 Page object uses WaitUtils to wait/scroll until the element is available.
-Test asserts outcomes using page-level methods (e.g., item is present/removed in cart).
 
 ---
 

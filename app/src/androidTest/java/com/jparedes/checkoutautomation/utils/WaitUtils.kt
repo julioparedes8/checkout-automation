@@ -11,6 +11,14 @@ import androidx.test.uiautomator.Until
 object WaitUtils {
     private const val DEFAULT_TIMEOUT = 10_000L
 
+    fun hasObject(
+        device: UiDevice,
+        selector: BySelector,
+        timeout: Long = DEFAULT_TIMEOUT
+    ): Boolean {
+        return device.wait(Until.hasObject(selector), timeout)
+    }
+
     fun waitForObject(
         device: UiDevice,
         selector: BySelector,

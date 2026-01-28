@@ -6,6 +6,9 @@ import com.jparedes.checkoutautomation.base.BaseTest
 import com.jparedes.checkoutautomation.data.TestProducts.Backpack
 import com.jparedes.checkoutautomation.data.TestProducts.Onesie
 import com.jparedes.checkoutautomation.data.TestUsers.standardUser
+import junit.framework.TestCase.assertEquals
+import junit.framework.TestCase.assertFalse
+import junit.framework.TestCase.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -16,39 +19,52 @@ class CheckoutFlowTest : BaseTest() {
     @Test
     fun testCompleteCheckoutFlow() {
         // Login
-        pages.loginPage.isDisplayed()
+        assertTrue("Home screen should be displayed", pages.loginPage.isDisplayed())
         pages.loginPage.loginAs(standardUser.userName, standardUser.password)
 
         // Add products
-        pages.homeProductsPage.isDisplayed()
+        assertTrue("Home screen should be displayed", pages.homeProductsPage.isDisplayed())
         pages.homeProductsPage.addToBagOnProduct(Backpack.name)
         pages.homeProductsPage.selectProduct(Onesie.name)
-        pages.productPage.isDisplayed()
+        assertTrue("Products screen should be displayed", pages.productPage.isDisplayed())
         pages.productPage.clickAddToCart()
         pages.productPage.clickBackToProducts()
-        pages.homeProductsPage.isDisplayed()
+        assertTrue("Home screen should be displayed", pages.homeProductsPage.isDisplayed())
 
         // Cart operations
         pages.homeProductsPage.clickCart()
-        pages.cartPage.isDisplayed()
-        pages.cartPage.verifyProductExists(By.text(Backpack.name))
-        pages.cartPage.verifyProductExists(By.text(Onesie.name))
-        pages.cartPage.removeItemByName(Backpack.name)
-        pages.cartPage.verifyProductDoesNotExists(By.text(Backpack.name))
+        assertTrue("Cart screen should be displayed", pages.cartPage.isDisplayed())
+        assertTrue("Product Should be displayed", pages.cartPage.isProductDisplayed(By.text(Backpack.name)))
+        assertTrue("Product Should be displayed", pages.cartPage.isProductDisplayed(By.text(Onesie.name)))
+        assertTrue("Product is removed correctly", pages.cartPage.removeItemByName(Backpack.name))
+        assertFalse("Removed Product Should not be displayed", pages.cartPage.isProductDisplayed(By.text(Backpack.name)))
 
         // Checkout flow
         pages.cartPage.clickCheckoutBtn()
-        pages.checkoutInfoPage.isDisplayed()
+        assertTrue("Checkout Info screen should be displayed", pages.checkoutInfoPage.isDisplayed())
         pages.checkoutInfoPage.insertCorrectCheckoutInfo("Julio", "Paredes", "85302")
-        pages.checkoutOverViewPage.isDisplayed()
-        pages.checkoutOverViewPage.verifyProductOverView(Onesie.name,"$${Onesie.price}")
-        pages.checkoutOverViewPage.verifyPaymentInfo(standardUser.cardString)
-        pages.checkoutOverViewPage.verifyShippingInfo(standardUser.shippingAddress)
-        pages.checkoutOverViewPage.verifyTotals()
+        assertTrue("Checkout Overview screen should be displayed", pages.checkoutOverViewPage.isDisplayed())
+        assertTrue(
+            "Product overview should be displayed",
+            pages.checkoutOverViewPage.isProductOverViewDisplayed(Onesie.name, "$${Onesie.price}")
+        )
+        assertTrue("Payment info should be displayed", pages.checkoutOverViewPage.isPaymentInfoDisplayed(standardUser.cardString))
+        assertTrue("Shipping info should be displayed", pages.checkoutOverViewPage.isShippingInfoDisplayed(standardUser.shippingAddress))
+
+        val totals = pages.checkoutOverViewPage.readTotals()
+        val (expectedTax, expectedTotal) = pages.checkoutOverViewPage.calculateExpectedTotals(totals.itemTotal)
+
+        assertEquals("Item total is not correct", Onesie.price.toBigDecimal(), totals.itemTotal)
+        assertEquals("Tax value is not correct", expectedTax, totals.tax)
+        assertEquals("Total value is not correct", expectedTotal, totals.total)
+
         pages.checkoutOverViewPage.clickFinish()
-        pages.checkoutCompletePage.isDisplayed()
-        pages.checkoutCompletePage.verifyOrderCompleteMessage()
+        assertTrue("Checkout Complete screen should be displayed", pages.checkoutCompletePage.isDisplayed())
+        assertTrue(
+            "Checkout Complete message should be displayed",
+            pages.checkoutCompletePage.isConfirmationMessageDisplayed()
+        )
         pages.checkoutCompletePage.backToHome()
-        pages.homeProductsPage.isDisplayed()
+        assertTrue("Home screen should be displayed", pages.homeProductsPage.isDisplayed())
     }
 }

@@ -21,10 +21,6 @@ abstract class BasePage(protected val device: UiDevice) {
         return device.hasObject(selector)
     }
 
-    protected fun isNotDisplayed(selector: BySelector) {
-        WaitUtils.waitForObjectToDisappear(device,selector)
-    }
-
     protected fun scrollToAndClick(selector: BySelector) {
         val obj = WaitUtils.waitForObjectWithScroll(device, selector)
         obj.click()

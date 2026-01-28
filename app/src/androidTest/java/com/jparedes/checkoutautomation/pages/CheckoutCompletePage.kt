@@ -21,8 +21,9 @@ class CheckoutCompletePage (device: UiDevice, context: Context) : BasePage(devic
         click(backToHomeBtn)
     }
 
-    fun verifyOrderCompleteMessage() {
-        WaitUtils.waitForObject(device,messageTitle)
-        WaitUtils.waitForObject(device,messageSubtitle)
+    fun isConfirmationMessageDisplayed(): Boolean {
+        WaitUtils.waitForObjectWithScroll(device, messageTitle)
+        WaitUtils.waitForObjectWithScroll(device, messageSubtitle)
+        return isDisplayed(messageTitle) && isDisplayed(messageSubtitle)
     }
 }
